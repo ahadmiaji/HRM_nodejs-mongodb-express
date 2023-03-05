@@ -6,6 +6,7 @@ const designationRouter = require("./designation-route");
 const userRouter = require("./users-route");
 const employeeRouter = require("./employee-route");
 const payrollRouter = require("./payroll-route");
+const salaryRouter = require("./salaryDetails-route");
 
 const router = Router();
 
@@ -15,5 +16,6 @@ router.use("/api/v1/designations", designationRouter);
 router.use("/api/v1/users", userRouter);
 router.use("/api/v1/employees", employeeRouter);
 router.use("/api/v1/payrolls", payrollRouter);
+router.use("/api/v1/salary-details", salaryRouter );
 
 module.exports = router;
