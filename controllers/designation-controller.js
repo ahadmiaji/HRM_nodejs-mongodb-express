@@ -21,8 +21,11 @@ const getDesignationListByFilterQuery = async () => {
 };
 
 const addDesignationInfo = async (req, res) => {
+
     try {
         const designation = await Designation.create(req.body);
+        // console.log("designation:",designation);
+
 
         return res.json({
             success: true,
@@ -30,6 +33,7 @@ const addDesignationInfo = async (req, res) => {
             message: "Designation created successfully!",
             data: designation
         });
+
     } catch (error) {
         console.log("error: ", error);
     }

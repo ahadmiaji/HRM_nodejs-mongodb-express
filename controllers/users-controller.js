@@ -50,7 +50,7 @@ const addUserInfo = asyncHandler(async (req, res) => {
             success: true,
             statusCode: 201,
             message: "User created successfully!",
-            data: User
+            data: user
         });
     } catch (error) {
         console.log("error: ", error);
@@ -183,39 +183,54 @@ const logout = asyncHandler(async (req, res) => {
 
 
 const updatePassword = asyncHandler(async (req, res) => {
-    try {
-        const { _id } = req.user;
-        // const { password } = req.body;
+    // try {
+    //     const { _id } = req.user;
+    //     // const { password } = req.body;
 
-        await validateMongoDbId(_id);
+    //     await validateMongoDbId(_id);
 
-        const userInfo = await User.findByIdAndUpdate(_id);
-
-
-        if (!userInfo) {
-            let customError = new Error("Invalid password!");
-            customError.statusCode = 404;
-            throw customError;
-        }
-
-        const user = new User(userInfo);
-        // console.log("user :", user);
-
-        if (req.body && req.body.password) {
-            user.password = req.body.password;
-
-            const updatePassword = await user.save();
-            console.log("updatePassword :", updatePassword);
-
-        }
-
-        return res.json(user);
+    //     const userInfo = await User.findById(_id);
 
 
+    //     if (!userInfo) {
+    //         let customError = new Error("Invalid password!");
+    //         customError.statusCode = 404;
+    //         throw customError;
+    //     }
 
-    } catch (error) {
-        throw error;
+    //     const user = new User(userInfo);
+    //     // console.log("user :", user);
+
+    //     if (req.body && req.body.password) {
+    //         user.password = req.body.password;
+
+    //         const updatePassword = await user.save();
+    //         console.log("updatePassword :", updatePassword);
+
+    //     }
+
+    //     return res.json(user);
+
+
+
+    // } catch (error) {
+    //     throw error;
+    // }
+    const { _id } = req.user;
+    const { password } = req.body;
+
+    validateMongoDbId(_id);
+
+    const user = await User.findById(_id);
+
+    if (password) {
+        user.password = password;
+        const updatedPassword = await user.save();
+        res.json(updatedPassword)
+    } else {
+        res.json(user);
     }
+
 });
 
 
@@ -231,7 +246,7 @@ const forgetPasswordToken = asyncHandler(async (req, res) => {
         const token = await user.createPasswordResetToken();
         await user.save();
 
-        const resetURL = `Hi, please Follow this link to reset Your paasword. This Link is valid till 10 minutes from now . <a href='http://localhost:5005/api/v1/users/forget-password-token/${token}'>Click here</a>`;
+        const resetURL = `Hi, Please Follow this link to reset Your Password. This Link is valid till 10 minutes from now . <a href='http://localhost:5005/api/v1/users/reset-password/${token}'>Click here</a>`;
 
         const data = {
             to: email,
@@ -246,6 +261,24 @@ const forgetPasswordToken = asyncHandler(async (req, res) => {
         throw new Error(error);
     }
 
+});
+
+
+//token called from usermodel. 
+const resetPassword = asyncHandler(async (req, res) => {
+    const { password } = req.body;
+    const { token } = req.params;
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+    const user = await User.findOne({
+        passwordResetToken: hashedToken,
+        passwordResetExpires: { $gt: Date.now() },
+    });
+    if (!user) throw new Error("Token Expired, Please try again later");
+    user.password = password;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save();
+    res.json(user);
 });
 
 
@@ -388,4 +421,4 @@ const updateInfo = async (req, res) => {
     }
 };
 
-module.exports = { addUserInfo, loginUserCtrl, handleRefreshToken, logout, updatePassword, forgetPasswordToken, getAllUser, getUserInfo, updateInfo };
+module.exports = { addUserInfo, loginUserCtrl, handleRefreshToken, logout, updatePassword, forgetPasswordToken, resetPassword, getAllUser, getUserInfo, updateInfo };
