@@ -1,19 +1,6 @@
 const Training = require('../models/training-model');
 
-// const createTraining = async (req, res) => {
-//     try {
-//         const { trainingList, trainingType, trainerList } = req.body;
-//         const newTraining = new Training({
-//             trainingList,
-//             trainingType,
-//             trainerList
-//         });
-//         const savedTraining = await newTraining.save();
-//         res.status(201).json(savedTraining);
-//     } catch (err) {
-//         res.status(500).json({ message: err.message });
-//     }
-// };
+
 const createTraining = async (req, res) => {
 
     try {

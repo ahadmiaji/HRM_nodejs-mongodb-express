@@ -8,6 +8,8 @@ const employeeRouter = require("./employee-route");
 const payrollRouter = require("./payroll-route");
 const salaryRouter = require("./salaryDetails-route");
 const trainingRouter = require("./training-route");
+const allowanceRouter =require("./allowance-route");
+const noticetableRouter = require("./notice-table-route");
 
 const router = Router();
 
@@ -19,5 +21,7 @@ router.use("/api/v1/employees", employeeRouter);
 router.use("/api/v1/payrolls", payrollRouter);
 router.use("/api/v1/salary-details", salaryRouter );
 router.use("/api/v1/trainings", trainingRouter);
+router.use("/api/v1/allowances", allowanceRouter);
+router.use("/api/v1/notice-tables", noticetableRouter );
 
 module.exports = router;

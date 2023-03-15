@@ -7,6 +7,8 @@ const jwt = require("jsonwebtoken");
 const { getDepartmentInfoByFilterQuery } = require("./department-controller");
 const validateMongoDbId = require("../utils/validateMongodbId");
 const sendEmail = require("./emailController");
+const { successResponseHandler } = require("../helpers/success-response-handler");
+const { userInfo } = require("os");
 
 //get all User info by filter query
 
@@ -78,14 +80,16 @@ const loginUserCtrl = asyncHandler(async (req, res) => {
             maxAge: 72 * 60 * 60 * 1000,
         });
 
-        res.json({
+        const userInfo =({
             _id: findUser?._id,
             name: findUser?.name,
             // lastname: findUser?.lastname,
             email: findUser?.email,
             mobile: findUser?.mobile,
-            token: generateToken(findUser?._id),
+            token: await generateToken(findUser?._id),
         });
+
+        await successResponseHandler(res, 200,"User login Successfully", "userDetails" , userInfo);
         // res.json(findUser); //when it use it will show you password hash
     } else {
         throw new Error("Invalid Credentials");
@@ -104,23 +108,25 @@ const handleRefreshToken = asyncHandler(async (req, res) => {
 
         const refreshToken = cookie.refreshToken;
 
-        const user = await User.findOne({ refreshToken });
+        const userInfo = await User.findOne({ refreshToken });
 
-        if (!user) {
+        if (!userInfo) {
             let customError = new Error("User not found!");
             customError.statusCode = 404;
             throw customError;
         }
+    
+        // let accessToken;
 
-        jwt.verify(refreshToken, process.env.JWT_SECRET, (err, decoded) => {
+        await jwt.verify(refreshToken, process.env.JWT_SECRET, (err, decoded) => {
 
-            if (err || user.id !== decoded.id) {
+            if (err || userInfo.id !== decoded.id) {
                 let customError = new Error("There is something wrong with Refresh Token");
                 customError.statusCode = 404;
                 throw customError;
             }
             else {
-                const accessToken = generateToken(user?._id);
+                const accessToken = generateToken(userInfo?._id);
 
                 return res.json({
                     success: true,
@@ -139,43 +145,73 @@ const handleRefreshToken = asyncHandler(async (req, res) => {
 
 //logout
 
-const logout = asyncHandler(async (req, res) => {
+// const logout = asyncHandler(async (req, res) => {
 
+//     try {
+//         const cookie = req.cookies;
+
+//         if (!cookie?.refreshToken) {
+//             let customError = new Error("No Refresh Token in Cookies!");
+//             customError.statusCode = 404;
+//             throw customError;
+//         }
+
+//         const refreshToken = cookie.refreshToken;
+
+//         const user = await User.findOne({ refreshToken });
+
+//         if (!user) {
+//             let customError = new Error("RefreshToken not found!");
+//             customError.statusCode = 404;
+//             throw customError;
+//         }
+
+//         if (!user) {
+//             res.clearCookie("refreshToken", {
+//                 httpOnly: true,
+//                 secure: true,
+//             });
+//             return res.sendStatus(204);  //forbidden
+//         }
+
+//         await User.findOneAndUpdate(refreshToken, {
+//             refreshToken: " ",
+//         });
+//         res.clearCookie("refreshToken", {
+//             httpOnly: true,
+//             secure: true,
+//         });
+//         res.sendStatus(204); //forbidden
+//     } catch (error) {
+//         throw error;
+//     }
+// });
+const logout = asyncHandler(async (req, res) => {
     try {
         const cookie = req.cookies;
 
         if (!cookie?.refreshToken) {
-            let customError = new Error("No Refresh Token in Cookies!");
+            let customError = new Error("No refresh token in cookies");
             customError.statusCode = 404;
             throw customError;
         }
 
         const refreshToken = cookie.refreshToken;
 
-        const user = await User.findOne({ refreshToken });
+        const userInfo = await User.findOne({ refreshToken });
 
-        if (!user) {
-            let customError = new Error("RefreshToken not found!");
-            customError.statusCode = 404;
-            throw customError;
+        if (!userInfo) {
+
+            res.clearCookie("refreshToken", { httpOnly: true, secure: true });
+
+            return await successResponseHandler(res, 204, "Access Forbidden", null, null);
         }
 
-        if (!user) {
-            res.clearCookie("refreshToken", {
-                httpOnly: true,
-                secure: true,
-            });
-            return res.sendStatus(204);  //forbidden
-        }
+        await User.findOneAndUpdate(refreshToken, { refreshToken: "" });
+        res.clearCookie("refreshToken", { httpOnly: true, secure: true });
 
-        await User.findOneAndUpdate(refreshToken, {
-            refreshToken: " ",
-        });
-        res.clearCookie("refreshToken", {
-            httpOnly: true,
-            secure: true,
-        });
-        res.sendStatus(204); //forbidden
+        return await successResponseHandler(res, 204, "Logout successfully!", null, null);
+
     } catch (error) {
         throw error;
     }
@@ -183,52 +219,31 @@ const logout = asyncHandler(async (req, res) => {
 
 
 const updatePassword = asyncHandler(async (req, res) => {
-    // try {
-    //     const { _id } = req.user;
-    //     // const { password } = req.body;
+  
+    try {
+        const { _id } = req.user;
+        
+        // const { password } = req.body;
 
-    //     await validateMongoDbId(_id);
+        await validateMongoDbId(_id);
 
-    //     const userInfo = await User.findById(_id);
+        const user = await User.findById(_id);
+        
 
+        if (!user) {
+            let customError = new Error("No user found!");
+            customError.statusCode = 404;
+            throw customError;
+        }
 
-    //     if (!userInfo) {
-    //         let customError = new Error("Invalid password!");
-    //         customError.statusCode = 404;
-    //         throw customError;
-    //     }
+        if (req.body && req.body.password) {
+            user.password = req.body.password;
+            const updatePassword = await user.save();
+        }
 
-    //     const user = new User(userInfo);
-    //     // console.log("user :", user);
-
-    //     if (req.body && req.body.password) {
-    //         user.password = req.body.password;
-
-    //         const updatePassword = await user.save();
-    //         console.log("updatePassword :", updatePassword);
-
-    //     }
-
-    //     return res.json(user);
-
-
-
-    // } catch (error) {
-    //     throw error;
-    // }
-    const { _id } = req.user;
-    const { password } = req.body;
-
-    validateMongoDbId(_id);
-
-    const user = await User.findById(_id);
-
-    if (password) {
-        user.password = password;
-        const updatedPassword = await user.save();
-        res.json(updatedPassword)
-    } else {
-        res.json(user);
+        return await successResponseHandler(res, 200, "User password changed successfully!");
+    } catch (error) {
+        throw new Error(error);
     }
 
 });
