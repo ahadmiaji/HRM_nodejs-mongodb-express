@@ -21,6 +21,7 @@ const getDepartmentByFilterQuery = async () => {
 
 const addInfo = async (req, res) => {
     try {
+        req.body.createdBy = req.user._id;
         const department = await Department.create(req.body);
 
 
@@ -62,7 +63,8 @@ const getAll = async (req, res) => {
 const getInfo = async (req, res) => {
     try {
 
-        const departmentInfo = getDepartmentInfoByFilterQuery(req.params.id);
+        const departmentInfo = await getDepartmentInfoByFilterQuery(req.params.id);
+        
 
         if (!departmentInfo) {
             let customError = new Error("Invalid departmentInfo!");
@@ -130,7 +132,18 @@ const updateDepartmentInfo = async (req, res) => {
         throw error;
     }
 };
+const deleteDepartmentById = async (req, res) => {
+    try {
+        const department = await Department.findByIdAndDelete(req.params.id);
+        if (!department) {
+            return res.status(404).json({ message: 'Department not found' });
+        }
+        res.json(department);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
 
 
 
-module.exports = { addInfo, getAll, getInfo, updateDepartmentInfo, getDepartmentInfoByFilterQuery };
+module.exports = { addInfo, getAll, getInfo, updateDepartmentInfo, getDepartmentInfoByFilterQuery, deleteDepartmentById };

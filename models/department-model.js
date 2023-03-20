@@ -9,6 +9,10 @@ const departmentSchema = new Schema({
     description: {
         type: String,
         required: true
+    },
+    createdBy: {
+        type: mongoose.Types.ObjectId,
+        required: true
     }
 }, { timestamps: true });
 

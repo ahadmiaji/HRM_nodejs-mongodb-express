@@ -41,4 +41,15 @@ const getTrainingById = async (req, res) => {
     }
 };
 
-module.exports ={createTraining , getTrainings, getTrainingById}
+const deleteTrainingById = async (req, res) => {
+    try {
+        const training = await Training.findByIdAndDelete(req.params.id);
+        if (!training) {
+            return res.status(404).json({ message: 'Training not found' });
+        }
+        res.json(training);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+module.exports ={createTraining , getTrainings, getTrainingById, deleteTrainingById}
