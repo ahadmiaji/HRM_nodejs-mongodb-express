@@ -29,6 +29,10 @@ const payrollSchema = new mongoose.Schema({
         type: Number,
         required: true,
         min: 0
+    },
+    createdBy: {
+        type: mongoose.Types.ObjectId,
+        required: true
     }
 });
 

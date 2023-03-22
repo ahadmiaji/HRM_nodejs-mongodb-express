@@ -16,6 +16,7 @@ const leaveTypeSchema = new Schema({
     },
     createdBy: {
         type: mongoose.Types.ObjectId,
+        required: true
     }
 }, { timestamps: true });
 

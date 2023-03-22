@@ -12,6 +12,10 @@ const trainingSchema = new mongoose.Schema({
     trainerList: {
         type: [String],
         required: true
+    },
+    createdBy: {
+        type: mongoose.Types.ObjectId,
+        required: true
     }
 });
 

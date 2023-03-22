@@ -21,6 +21,10 @@ const salaryDetailsSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  createdBy: {
+    type: mongoose.Types.ObjectId,
+    required: true
+  }
 });
 
 module.exports = mongoose.model('SalaryDetails', salaryDetailsSchema);

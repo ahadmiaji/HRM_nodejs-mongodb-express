@@ -17,6 +17,10 @@ const DesignationSchema = new Schema({
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    createdBy: {
+        type: mongoose.Types.ObjectId,
+        required: true
     }
 }, { timestamps: true });
 

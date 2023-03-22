@@ -18,6 +18,10 @@ const employeeSchema = new mongoose.Schema({
     designationName: {
         type: String,
     },
+    createdBy: {
+        type: mongoose.Types.ObjectId,
+        required: true
+    }
 },
 );
 

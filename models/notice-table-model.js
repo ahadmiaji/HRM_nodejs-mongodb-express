@@ -14,7 +14,8 @@ const noticetableSchema = new mongoose.Schema({
         required: true,
     },
     createdBy: {
-        type: Date,
+        type: mongoose.Types.ObjectId,
+        required: true
     },
     publishDate :{
         type: Date,
