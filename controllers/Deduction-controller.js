@@ -2,7 +2,9 @@ const Deduction = require("../models/Deduction-model");
 
 const createDeduction = async (req, res) => {
     try {
-        const deduction = await Deduction.create(req, body);
+        req.body.createdBy = req.user._id;
+        
+        const deduction = await Deduction.create(req.body);
 
         return res.json({
             success: true,
@@ -49,6 +51,12 @@ const deleteDeduction = async (req, res) => {
                 message: "Deduction not Found"
             });
         }
+        return res.json({
+            success: true,
+            statusCode: 201,
+            message: "Deduction deleted Successfully!",
+            data: deduction
+        });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

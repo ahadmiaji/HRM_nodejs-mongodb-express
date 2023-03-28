@@ -12,6 +12,8 @@ const allowanceRouter =require("./allowance-route");
 const noticetableRouter = require("./notice-table-route");
 const bonussettingRouter = require("./BonusSetting-route");
 const deductionRouter = require("./Deduction-route");
+const employeeawardRouter = require("./EmployeeAward-route");
+const employeebonusRouter = require("./EmployeeBonus-route");
 
 const router = Router();
 
@@ -27,4 +29,6 @@ router.use("/api/v1/allowances", allowanceRouter);
 router.use("/api/v1/notice-tables", noticetableRouter );
 router.use("/api/v1/bonus-settings", bonussettingRouter);
 router.use("/api/v1/deductions", deductionRouter);
+router.use("/api/v1/employee-awards", employeeawardRouter);
+router.use("/api/v1/employee-bonus", employeebonusRouter);
 module.exports = router;

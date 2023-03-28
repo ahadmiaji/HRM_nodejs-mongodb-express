@@ -2,6 +2,8 @@ const BonusSetting = require ("../models/BonusSetting-model");
 
 const createBonusSetting = async(req,res)=>{
     try {
+        req.body.createdBy = req.user._id;
+
         const bonussetting = await BonusSetting.create(req.body);
 
         return res.json({
@@ -40,15 +42,20 @@ const getBonusSettingById = async(req,res) =>{
 
 const deleteBonusSetting = async(req,res)=>{
     try {
-        const bonussetting = await BonusSetting.findByIdAndDelete(req.prams.id);
+        const bonussetting = await BonusSetting.findByIdAndDelete(req.params.id);
 
         if (!bonussetting) {
             return res.status(404).json({ message: 'BonusSetting not found' });
         }
-        res.json(bonussetting);
+       
+        return res.json({
+            success: true,
+            statusCode: 201,
+            message: "BonusSetting deleted successfully!",
+            data: bonussetting
+        });
     } catch (error) {
         res.status(500).json({ message: err.message });
-
     }
 };
 

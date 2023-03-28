@@ -138,7 +138,14 @@ const deleteDepartmentById = async (req, res) => {
         if (!department) {
             return res.status(404).json({ message: 'Department not found' });
         }
-        res.json(department);
+        // res.json(department);
+        return res.json({
+            success: true,
+            statusCode: 500,
+            message: "Department deleted successfully!",
+            data: department
+        });
+        
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
