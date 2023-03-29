@@ -1,4 +1,4 @@
-const AnnualDays = require("../models/annualDays-model");
+const AnnualDays = require("../models/annuaDays-model");
 
 const createAnnualDays = async (req, res) => {
     try {
