@@ -14,6 +14,9 @@ const bonussettingRouter = require("./BonusSetting-route");
 const deductionRouter = require("./Deduction-route");
 const employeeawardRouter = require("./EmployeeAward-route");
 const employeebonusRouter = require("./EmployeeBonus-route");
+const annualdaysRouter = require("./annualdays-route");
+
+
 
 const router = Router();
 
@@ -31,4 +34,6 @@ router.use("/api/v1/bonus-settings", bonussettingRouter);
 router.use("/api/v1/deductions", deductionRouter);
 router.use("/api/v1/employee-awards", employeeawardRouter);
 router.use("/api/v1/employee-bonus", employeebonusRouter);
+router.use("/api/v1/annual-days",annualdaysRouter);
+
 module.exports = router;
