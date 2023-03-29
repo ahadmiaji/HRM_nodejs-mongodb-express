@@ -30,6 +30,6 @@ const annualDaysSchema = new mongoose.Schema({
 
 module.exports = mongoose.model('AnnualDays', annualDaysSchema);
 
-// const annualdaysRouter = require(".");
+// const annualdaysRouter = require("./annualdays-route");
 
 // router.use("/api/v1/annual-days", );
