@@ -1,3 +1,4 @@
+const { successResponseHandler } = require("../helpers/success-response-handler");
 const AnnualDays = require("../models/annuaDays-model");
 
 const createAnnualDays = async (req, res) => {
@@ -27,17 +28,19 @@ const getAnnualDays = async (req, res) => {
 };
 
 const getAnnualDaysById = async (req, res) => {
-    try {
-        const annualdays = await AnnualDays.findById(req.prams.id);
+   try {
+       const annualdays = await AnnualDays.findById(req.params.id)
 
-        if (!annualdays) {
-            return res.status(404).json({ message: 'AnnualDays not found' });
-        }
+    //    if (!annualdays){
+    //     return res.status(404).json({ message:'AnnualDays not found'});
+    // }
+    //    res.json(annualdays);
 
-        res.json(annualdays);
-    } catch (error) {
-        res.status(500).json({ message: err.message });
-    }
+       return await successResponseHandler(res, 200, "AnnualDays info fetch successfully!", "details",annualdays)
+   } catch (error) {
+    // res.status(500).json({message: err.message});
+       throw new Error(error);
+   }
 };
 
 const deleteAnnualDays = async (req, res) => {

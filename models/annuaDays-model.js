@@ -3,8 +3,7 @@ const mongoose = require('mongoose');
 const annualDaysSchema = new mongoose.Schema({
     year: {
         type: Number,
-        required: true,
-        unique: true
+        required: true,   
     },
     annualLeaves: {
         type: Number,
